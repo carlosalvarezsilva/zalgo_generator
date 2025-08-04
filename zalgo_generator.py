@@ -31,6 +31,7 @@ def zalgo_char(c, intensity, isCorrupted=False):
     if not c.isalpha():
         return c
     all_marks = zalgo_full if isCorrupted else zalgo_normal
+    intensity = min(max(0, intensity), 20)
     zalgofied_char = c + ''.join(random.choices(all_marks, k=intensity))
     if random.random() < 0.15:
         zalgofied_char += random.choice(superscripts_and_subscripts)
@@ -39,54 +40,80 @@ def zalgo_char(c, intensity, isCorrupted=False):
 def zalgo_text(text, intensity, isCorrupted=False):
     return ''.join(zalgo_char(c, intensity, isCorrupted) for c in text)
 
-def gradual_zalgo(text, min_intensity=0, max_intensity=10, isCorrupted=False):
+def gradual_zalgo(text, start_intensity=0, end_intensity=10, isCorrupted=False):
     out = []
-    steps = len(text)
+    steps = (len(text) - 1) if (len(text) > 1) else 1
     for i, c in enumerate(text):
-        level = min_intensity + int((max_intensity - min_intensity) * i / steps)
+        level = start_intensity + int((end_intensity - start_intensity) * (i / steps))
         out.append(zalgo_char(c, level, isCorrupted))
     return ''.join(out)
 
 # User interface
 def main():
-    while(True):
+    while True:
         print("Zalgo Text Generator")
         print("====================")
         print("1. Regular Zalgo")
         print("2. Gradual Zalgo")
-        print("3. Binary Zalgo (only 0s and 1s)")
-        print("4. Gradual Binary Zalgo (only 0s and 1s)")
+        print("3. Zalgo (Powerfull Version)")
+        print("4. Gradual Zalgo (Powerfull Version)")
         print("Other to Exit")
         choice = input("Choose an option (1-4): ")
-
         if choice == '1':
             text = input("Enter text to Zalgo-fy: ")
-            intensity = int(input("Enter intensity (1-15): "))
+            if not text.strip():
+                print("No text provided.")
+                continue
+            try:
+                intensity = int(input("Enter intensity (recommended 1-20): "))
+            except ValueError:
+                print("Invalid number. Try again.")
+                continue
             print("\nZalgo Text:")
             print(zalgo_text(text, intensity))
-
         elif choice == '2':
             text = input("Enter text to gradually Zalgo-fy: ")
-            min_int = int(input("Enter minimum intensity (0-15): "))
-            max_int = int(input("Enter maximum intensity (1-20): "))
+            if not text.strip():
+                print("No text provided.")
+                continue
+            try:
+                start_int = int(input("Enter intensity from first letter (0-20): "))
+                end_int = int(input("Enter intensity from last letter (0-20): "))
+            except ValueError:
+                print("Invalid number. Try again.")
+                continue
             print("\nGradual Zalgo Text:")
-            print(gradual_zalgo(text, min_int, max_int))
-
+            print(gradual_zalgo(text, start_int, end_int))
         elif choice == '3':
             text = input("Enter text to Zalgo-fy on steroids: ")
-            intensity = int(input("Enter intensity (1-15): "))
-            print("\nBinary Zalgo Text:")
+            if not text.strip():
+                print("No text provided.")
+                continue
+            try:
+                intensity = int(input("Enter intensity (1-20): "))
+            except ValueError:
+                print("Invalid number. Try again.")
+                continue
+            print("\nBig Zalgo Text:")
             print(zalgo_text(text, intensity, True))
 
         elif choice == '4':
             text = input("Enter text to gradually Zalgo-fy on steroids: ")
-            min_int = int(input("Enter minimum intensity (0-15): "))
-            max_int = int(input("Enter maximum intensity (1-20): "))
-            print("\nGradual Zalgo Text:")
-            print(gradual_zalgo(text, min_int, max_int, True))
+            if not text.strip():
+                print("No text provided.")
+                continue
+            try:
+                start_int = int(input("Enter intensity from first letter (0-20): "))
+                end_int = int(input("Enter intensity from last letter (0-20): "))
+            except ValueError:
+                print("Invalid number. Try again.")
+                continue
+            print("\nBig Gradual Zalgo Text:")
+            print(gradual_zalgo(text, start_int, end_int, True))
 
         else:
-            print("Invalid option. Program End.")
+            print("Goodbye!")
+            break
 
 if __name__ == "__main__":
     main()
